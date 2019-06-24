@@ -1,11 +1,4 @@
-# GPLS Batch Processing 
-GPLS Batch Processing will perform scheduling jobs that are triggered by an external cron service (eg. [dkron](https://dkron.io/)).
-
-Jobs to run
-- SFTP File transfer between GPLS and external agencies (eg. ICA)
-- Transfer Payment file transfer between GPLS and bank
-- Email Sending 
-- Email Polling
+# Microservice Boilerplate
 
 ## Prerequisites
 - Java 8 (Require a later version than 1.8.0_161, to include [JCE](https://www.oracle.com/technetwork/java/javase/downloads/jce-all-download-5170447.html) by default. Java 10 does not work)
