@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: 'jdbc:mysql://localhost:3306/db'
+    username: "user"
+    password: "password"
+  jpa:
+    show-sql: true
+    hibernate:
+      use-new-id-generator-mappings: true
+      ddl-auto: validate
+    properties:
+      dialect: org.hibernate.dialect.MySQLInnoDBDialect

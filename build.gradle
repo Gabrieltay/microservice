@@ -1,45 +1,177 @@
-plugins {
-	id 'org.jetbrains.kotlin.plugin.jpa' version '1.2.71'
-	id 'org.springframework.boot' version '2.1.4.BUILD-SNAPSHOT'
-	id 'org.jetbrains.kotlin.jvm' version '1.2.71'
-	id 'org.jetbrains.kotlin.plugin.spring' version '1.2.71'
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "https://plugins.gradle.org/m2/" }
+		jcenter()
+	}
+	dependencies {
+		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinPluginVersion}")
+		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinPluginVersion}")
+		classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinPluginVersion}")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
+	}
 }
 
-apply plugin: 'io.spring.dependency-management'
-
-group = 'dev.boilerplate.gabrieltay'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+group = "sg.gov.tech.gpls"
+version = "0.0.1-SNAPSHOT"
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/snapshot' }
-	maven { url 'https://repo.spring.io/milestone' }
+	maven { url "https://plugins.gradle.org/m2/" }
+	jcenter()
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+apply plugin: "kotlin"
+apply plugin: "kotlin-jpa"
+apply plugin: "kotlin-spring"
+apply plugin: "io.spring.dependency-management"
+apply plugin: "org.springframework.boot"
+apply plugin: "org.flywaydb.flyway"
+apply plugin: "idea"
+apply plugin: "jacoco"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+idea {
+	module {
+		outputDir file("$buildDir/classes/main")
+		testOutputDir file("$buildDir/classes/test")
+	}
 }
 
 compileKotlin {
 	kotlinOptions {
-		freeCompilerArgs = ['-Xjsr305=strict']
-		jvmTarget = '1.8'
+		allWarningsAsErrors = true
+		freeCompilerArgs = ["-Xjsr305=strict"]
+		jvmTarget = "1.8"
+	}
+}
+compileTestKotlin {
+	kotlinOptions {
+		allWarningsAsErrors = true
+		freeCompilerArgs = ["-Xjsr305=strict"]
+		jvmTarget = "1.8"
 	}
 }
 
-compileTestKotlin {
-	kotlinOptions {
-		freeCompilerArgs = ['-Xjsr305=strict']
-		jvmTarget = '1.8'
-	}
+configurations {
+    ktlint
+    detekt
 }
+
+dependencies {
+	// spring
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	runtimeOnly("org.springframework.boot:spring-boot-devtools")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.security:spring-security-test")
+
+	// kotlin
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+	// database
+    implementation("org.flywaydb:flyway-core")
+    runtimeOnly('mysql:mysql-connector-java')
+    testImplementation("com.h2database:h2")
+
+    // linter & code analysis
+    ktlint "com.pinterest:ktlint:${ktlintVersion}"
+    detekt "io.gitlab.arturbosch.detekt:detekt-cli:${detektVersion}"
+
+    // unit testing
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation("org.assertj:assertj-core:${assertjVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+    testImplementation("com.tngtech.archunit:archunit-junit5-api:${archUnitVersion}")
+    testImplementation("com.tngtech.archunit:archunit-junit5-engine:${archUnitVersion}")
+}
+
+flyway {
+    String databaseHost = project.findProperty("dbHost") ?: "localhost"
+    String databaseName = project.findProperty("dbName") ?: "db"
+    String databaseUsername = project.findProperty("dbUsername") ?: "user"
+    String databasePassword = project.findProperty("dbPassword") ?: "password"
+    url = "jdbc:mysql://${databaseHost}:3306/${databaseName}?user=${databaseUsername}&password=${databasePassword}"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        quiet {
+            events "passed", "failed", "skipped"
+        }
+    }
+}
+
+def exclusionList = [
+    'dev/boilerplate/gabrieltay/microservice/MicroserviceApplication*',
+    'dev/boilerplate/gabrieltay/microservice/controller/dto/**',
+    'dev/boilerplate/gabrieltay/microservice/model/**'
+]
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                exclude: exclusionList)
+        })
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'PACKAGE'
+            excludes = exclusionList
+
+            limit {
+                minimum = 0.0
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+jacocoTestCoverageVerification.dependsOn jacocoTestReport
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt"
+}
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "src/**/*.kt"
+}
+
+task detekt(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code static analysis"
+    classpath = configurations.detekt
+    main = "io.gitlab.arturbosch.detekt.cli.Main"
+    def input = "$projectDir"
+    def config = "$projectDir/detekt.yml"
+    def filters = ".*/build/.*,.*/resources/.*"
+    def params = [ '-i', input, '-c', config, '-f', filters, '--parallel']
+    args(params)
+}
+
+check.dependsOn detekt
