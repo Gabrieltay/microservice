@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export POSTGRES_HOST="localhost"
+export MYSQL_HOST="localhost"
 
 function cleanup() {
     docker-compose -f docker/services.yml down
