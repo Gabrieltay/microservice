@@ -1,5 +1,4 @@
-# Microservice Boilerplate
-
+# Microservice Boilerplate [![build status](https://travis-ci.org/Gabrieltay/microservice.svg?branch=master)](https://travis-ci.org/Gabrieltay/microservice)
 ## Prerequisites
 - Java 8 (Require a later version than 1.8.0_161, to include [JCE](https://www.oracle.com/technetwork/java/javase/downloads/jce-all-download-5170447.html) by default. Java 10 does not work)
 - Gradle
