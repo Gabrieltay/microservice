@@ -7,7 +7,8 @@ import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 
-@AnalyzeClasses(packages = ["dev.boilerplate.gabrieltay.microservice"], importOptions = [ImportOption.DoNotIncludeTests::class])
+@AnalyzeClasses(packages = ["dev.boilerplate.gabrieltay.microservice"],
+        importOptions = [ImportOption.DoNotIncludeTests::class])
 class LayerDependencyTest {
 
     @ArchTest
