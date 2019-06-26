@@ -1,5 +1,4 @@
 autoCorrect: true
-failFast: true
 
 test-pattern:
   active: true
@@ -84,6 +83,10 @@ exceptions:
     active: false
   SwallowedException:
     active: false
+
+empty-blocks:
+  active: true
+  excludes: "**/test/**,**/*.Test.kt,**/*.Spec.kt"
 
 naming:
   active: true
