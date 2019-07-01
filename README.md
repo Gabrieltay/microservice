@@ -1,4 +1,4 @@
-# Microservice Boilerplate [![build status](https://travis-ci.org/Gabrieltay/microservice.svg?branch=master)](https://travis-ci.org/Gabrieltay/microservice) [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
+# Microservice Boilerplate with GraphQL [![build status](https://travis-ci.org/Gabrieltay/microservice.svg?branch=master)](https://travis-ci.org/Gabrieltay/microservice) [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 ## Prerequisites
 - Java 8 (Require a later version than 1.8.0_161, to include [JCE](https://www.oracle.com/technetwork/java/javase/downloads/jce-all-download-5170447.html) by default. Java 10 does not work)
@@ -22,6 +22,22 @@ $ ./gradlew check
 ```
 
 
+# GraphQL
+GraphQL and GraphiQL are servlets provided by GraphQL-spring-boot-starter dependencies. 
+
+Access your GraphiQL [here](http://localhost:8080/graphiql)
+
+To send a HTTP POST query request with content-type: application/graphql
+```graphql
+{
+  human(id: "1000") {
+    id
+    name
+  }
+}
+```
+
+
 
 ### Reference Documentation
 For further reference, please consider the following sections:
@@ -36,3 +52,5 @@ The following guides illustrate how to use some features concretely:
 * [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
 * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
+* [GraphQL documentation](https://graphql.org/)
+* [GraphQL Java](https://www.graphql-java.com/)

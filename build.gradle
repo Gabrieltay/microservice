@@ -10,6 +10,7 @@ buildscript {
 		classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinPluginVersion}")
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
+        classpath("mysql:mysql-connector-java:8.0.16")
 	}
 }
 
@@ -81,6 +82,11 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     runtimeOnly('mysql:mysql-connector-java')
     testImplementation("com.h2database:h2")
+
+    // graphql
+    implementation("com.graphql-java-kickstart:graphql-spring-boot-starter:${graphqlVersion}")
+    implementation("com.graphql-java-kickstart:graphiql-spring-boot-starter:${graphqlVersion}")
+    implementation("com.graphql-java-kickstart:graphql-java-tools:5.6.1")
 
     // linter & code analysis
     ktlint "com.pinterest:ktlint:${ktlintVersion}"
